@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE Paper Generator</title>
+    <style>
+        /* A4 Size Base */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            background: #f5f5f5;
+            color: #000;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: #1a237e;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        nav {
+            background: #283593;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: #3f51b5;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        nav button:hover {
+            background: #303f9f;
+        }
+
+        nav button.active {
+            background: #f44336;
+        }
+
+        .section {
+            display: none;
+            padding: 20px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #3f51b5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .btn:hover {
+            background: #303f9f;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-success {
+            background: #4caf50;
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        .question-list {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .question-item {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .question-type {
+            background: #3f51b5;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .question-marks {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Paper Preview Styling - Updated for A4 */
+        .paper-preview {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 0;
+            margin-top: 20px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paper-content {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm 20mm;
+            background: white;
+            position: relative;
+            font-family: 'Times New Roman', Times, serif;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* CBSE Border */
+        .paper-content::before {
+            content: '';
+            position: absolute;
+            top: 15mm;
+            left: 15mm;
+            right: 15mm;
+            bottom: 15mm;
+            border: 2px solid #1a237e;
+            pointer-events: none;
+        }
+
+        /* Inner page border (like CBSE papers) */
+        .paper-content::after {
+            content: '';
+            position: absolute;
+            top: 18mm;
+            left: 18mm;
+            right: 18mm;
+            bottom: 18mm;
+            border: 1px solid #000;
+            pointer-events: none;
+        }
+
+        .paper-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #1a237e;
+            padding-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .school-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #1a237e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a237e;
+            font-size: 12px;
+            background: white;
+        }
+
+        .school-info {
+            flex: 1;
+        }
+
+        .school-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .school-tagline {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .paper-title {
+            font-size: 22px;
+            color: #000;
+            margin: 20px 0 15px 0;
+            font-weight: bold;
+            text-decoration: underline;
+            position: relative;
+            z-index: 1;
+        }
+
+        .paper-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .paper-section {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ccc;
+            position: relative;
+            z-index: 1;
+        }
+
+        .paper-question {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            page-break-inside: avoid;
+        }
+
+        .question-number {
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+            min-width: 25px;
+        }
+
+        .question-content {
+            margin-left: 30px;
+        }
+
+        .paper-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #1a237e;
+            text-align: right;
+            position: relative;
+            z-index: 1;
+        }
+
+        .total-marks {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .passing-marks {
+            color: #f44336;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .options {
+            margin: 10px 0 0 30px;
+        }
+
+        .option {
+            margin-bottom: 8px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .paper-preview, .paper-preview * {
+                visibility: visible;
+            }
+            
+            .paper-preview {
+                position: fixed;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+                box-shadow: none;
+                background: white;
+                overflow: visible;
+            }
+            
+            .paper-content {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 15mm 20mm;
+                box-shadow: none;
+                border: none;
+                page-break-after: always;
+            }
+            
+            .paper-content::before {
+                content: '';
+                position: absolute;
+                top: 15mm;
+                left: 15mm;
+                right: 15mm;
+                bottom: 15mm;
+                border: 2px solid #1a237e !important;
+            }
+            
+            .paper-content::after {
+                content: '';
+                position: absolute;
+                top: 18mm;
+                left: 18mm;
+                right: 18mm;
+                bottom: 18mm;
+                border: 1px solid #000 !important;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            /* Ensure proper page breaks */
+            .paper-section {
+                page-break-inside: avoid;
+            }
+            
+            .paper-question {
+                page-break-inside: avoid;
+            }
+            
+            .paper-footer {
+                page-break-before: avoid;
+            }
+            
+            @page {
+                margin: 0;
+                size: A4;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #1a237e;
+        }
+
+        .statistics {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 12px;
+            border-radius: 3px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3f51b5;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .section-selector {
+            margin-bottom: 20px;
+        }
+
+        .section-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .section-btn {
+            padding: 5px 15px;
+            border: 1px solid #3f51b5;
+            background: white;
+            color: #3f51b5;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .section-btn.active {
+            background: #3f51b5;
+            color: white;
+        }
+
+        .add-section-btn {
+            padding: 5px 15px;
+            border: 1px solid #4caf50;
+            background: white;
+            color: #4caf50;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .instructions-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .instructions-list {
+            margin-left: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .instructions-list li {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .instructions-list li span {
+            font-weight: normal;
+        }
+
+        /* Roman numerals for instructions */
+        .instructions-list {
+            list-style-type: lower-roman;
+        }
+
+        .instructions-list li::marker {
+            font-weight: bold;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .delete-section-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        /* Scrollbar for preview */
+        .paper-preview {
+            overflow-x: auto;
+        }
+        
+        /* CBSE-specific styles */
+        .cbse-heading {
+            font-size: 24px;
+            color: #1a237e;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .time-marks {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        
+        .question-instructions {
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .or-separator {
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        /* Subject filter */
+        .subject-filter {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .filter-btn {
+            padding: 5px 15px;
+            border: 1px solid #3f51b5;
+            background: white;
+            color: #3f51b5;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: #3f51b5;
+            color: white;
+        }
+        
+        .institution-settings {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CBSE Question Paper Generator</h1>
+            <p>Create professional CBSE-style question papers</p>
+        </header>
+
+        <nav>
+            <button class="active" onclick="showSection('add-question', this)">
+                <i class="fas fa-plus-circle"></i> Add Question
+            </button>
+            <button onclick="showSection('questions-list', this)">
+                <i class="fas fa-list"></i> All Questions
+            </button>
+            <button onclick="showSection('institution-settings', this)">
+                <i class="fas fa-school"></i> Institution
+            </button>
+            <button onclick="showSection('generate-paper', this)">
+                <i class="fas fa-file-alt"></i> Generate Paper
+            </button>
+        </nav>
+
+        <!-- Add Question Section -->
+        <div class="section active" id="add-question">
+            <h2>Add New Question</h2>
+            
+            <div class="form-group">
+                <label>Section</label>
+                <div class="section-buttons" id="section-buttons">
+                    <!-- Sections will be added here -->
+                </div>
+                <button class="add-section-btn" onclick="addNewSection()">
+                    <i class="fas fa-plus"></i> Add New Section
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Subject Name *</label>
+                <input type="text" id="subject" placeholder="e.g., Mathematics, English, Science" required>
+                <small style="color: #666;">Questions are stored subject-wise. Use consistent subject names.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Question Text</label>
+                <textarea id="question-text" placeholder="Enter your question here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Question Type</label>
+                <select id="question-type">
+                    <option value="mcq">Multiple Choice (MCQ)</option>
+                    <option value="fib">Fill in the Blanks (FIB)</option>
+                    <option value="short">Short Answer</option>
+                    <option value="long">Long Answer</option>
+                    <option value="truefalse">True or False</option>
+                </select>
+            </div>
+
+            <div id="options-section" style="display: none;">
+                <div class="form-group">
+                    <label>Options (One per line, mark correct answer with *)</label>
+                    <textarea id="options" placeholder="*Option 1 (Correct)&#10;Option 2&#10;Option 3&#10;Option 4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Marks</label>
+                <input type="number" id="marks" min="1" value="1">
+            </div>
+
+            <button class="btn" onclick="addQuestion()">
+                <i class="fas fa-plus"></i> Add Question
+            </button>
+
+            <div class="question-list">
+                <h3>Recent Questions</h3>
+                <div id="recent-questions">
+                    <!-- Recent questions will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List Section -->
+        <div class="section" id="questions-list">
+            <h2>All Questions</h2>
+            
+            <div class="subject-filter">
+                <label>Filter by Subject:</label>
+                <div class="filter-buttons" id="subject-filters">
+                    <button class="filter-btn active" onclick="filterQuestions('all')">All Subjects</button>
+                    <!-- Subject filters will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="statistics">
+                <h3>Question Bank Summary</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-questions">0</div>
+                        <div class="stat-label">Total Questions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-marks-bank">0</div>
+                        <div class="stat-label">Total Marks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-sections">0</div>
+                        <div class="stat-label">Sections</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-subjects">0</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="search-questions" placeholder="Search questions..." onkeyup="searchQuestions()">
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Section</th>
+                        <th>Question</th>
+                        <th>Type</th>
+                        <th>Marks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="questions-table">
+                    <!-- Questions will appear here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Institution Settings Section -->
+        <div class="section" id="institution-settings">
+            <h2>Institution Settings</h2>
+            
+            <div class="institution-settings">
+                <p><strong>Customize your institution details for the question paper:</strong></p>
+                
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label>Institution Name *</label>
+                        <input type="text" id="institution-name" placeholder="e.g., Gospel Grace Education" value="Gospel Grace Education">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Institution Type</label>
+                        <select id="institution-type">
+                            <option value="School">School</option>
+                            <option value="College">College</option>
+                            <option value="University">University</option>
+                            <option value="Institute">Institute</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tagline/Slogan</label>
+                        <input type="text" id="institution-tagline" placeholder="e.g., Where Knowledge Meets Wisdom" value="Where Knowledge Meets Wisdom">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Logo Text</label>
+                        <input type="text" id="logo-text" placeholder="e.g., GGE" value="GGE" maxlength="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Affiliation</label>
+                        <input type="text" id="affiliation" placeholder="e.g., Affiliated to CBSE, New Delhi" value="Affiliated to CBSE, New Delhi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Address Line 1</label>
+                        <input type="text" id="address-line1" placeholder="Street Address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Address Line 2</label>
+                        <input type="text" id="address-line2" placeholder="City, State, PIN">
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="saveInstitutionSettings()">
+                    <i class="fas fa-save"></i> Save Institution Settings
+                </button>
+                
+                <button class="btn" onclick="resetInstitutionSettings()" style="margin-left: 10px;">
+                    <i class="fas fa-undo"></i> Reset to Default
+                </button>
+            </div>
+            
+            <div class="instructions-container">
+                <label><strong>Preview:</strong></label>
+                <div style="padding: 20px; background: white; border: 1px solid #ddd; margin-top: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #1a237e;" id="preview-institution-name">Gospel Grace Education</div>
+                        <div style="font-size: 16px; color: #666; font-style: italic;" id="preview-tagline">Where Knowledge Meets Wisdom</div>
+                        <div style="margin-top: 10px; font-size: 14px; color: #666;" id="preview-affiliation">Affiliated to CBSE, New Delhi</div>
+                        <div style="margin-top: 5px; font-size: 12px; color: #999;" id="preview-address"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Paper Section -->
+        <div class="section" id="generate-paper">
+            <h2>Generate CBSE Question Paper</h2>
+            
+            <div class="form-group">
+                <label>Select Subject for Paper</label>
+                <select id="paper-subject" onchange="loadSubjectQuestions()">
+                    <option value="">-- Select Subject --</option>
+                    <!-- Subjects will be loaded dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Paper Title</label>
+                <input type="text" id="paper-title" placeholder="e.g., Annual Examination 2024">
+            </div>
+
+            <div class="form-group">
+                <label>Class/Grade</label>
+                <input type="text" id="class-grade" value="Class 10">
+            </div>
+
+            <div class="form-group">
+                <label>Date</label>
+                <input type="text" id="paper-date" placeholder="e.g., 15th March, 2024">
+            </div>
+
+            <div class="instructions-container">
+                <label><strong>Instructions (Roman Numerals)</strong></label>
+                <textarea id="instructions" rows="4">i) All questions are compulsory.
+ii) The question paper consists of 30 questions divided into four sections A, B, C, and D.
+iii) Section A comprises of 6 questions of 1 mark each, Section B comprises of 6 questions of 2 marks each, Section C comprises of 10 questions of 3 marks each and Section D comprises of 8 questions of 4 marks each.
+iv) Use of calculator is not permitted.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Passing Marks Percentage</label>
+                <input type="number" id="passing-percentage" min="30" max="100" value="33">
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn" onclick="previewPaper()">
+                    <i class="fas fa-eye"></i> Preview Paper
+                </button>
+                <button class="btn btn-success" onclick="printPaper()">
+                    <i class="fas fa-print"></i> Print Paper
+                </button>
+                <button class="btn btn-danger" onclick="clearAllQuestions()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+
+            <div class="paper-preview no-print">
+                <div class="paper-content" id="paper-content">
+                    <div class="empty-state" id="empty-preview">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>No Paper Generated Yet</h3>
+                        <p>Select a subject and click "Preview Paper" to generate CBSE format paper</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Question Bank with Sections - Now stored by subject
+        let questionsBySubject = JSON.parse(localStorage.getItem('questionsBySubject')) || {};
+        let sections = JSON.parse(localStorage.getItem('sections')) || [
+            { id: 1, name: 'Section A', description: 'Questions 1 to 6 carry 1 mark each' },
+            { id: 2, name: 'Section B', description: 'Questions 7 to 12 carry 2 marks each' },
+            { id: 3, name: 'Section C', description: 'Questions 13 to 22 carry 3 marks each' },
+            { id: 4, name: 'Section D', description: 'Questions 23 to 30 carry 4 marks each' }
+        ];
+        
+        // Institution Settings
+        let institutionSettings = JSON.parse(localStorage.getItem('institutionSettings')) || {
+            name: "Gospel Grace Education",
+            type: "School",
+            tagline: "Where Knowledge Meets Wisdom",
+            logoText: "GGE",
+            affiliation: "Affiliated to CBSE, New Delhi",
+            addressLine1: "",
+            addressLine2: ""
+        };
+        
+        let currentSectionId = 1;
+        let currentSubjectFilter = 'all';
+        let currentPaperSubject = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSections();
+            updateQuestionList();
+            updateStatistics();
+            setupQuestionTypeListener();
+            loadRecentQuestions();
+            loadInstitutionSettings();
+            updateSubjectFilters();
+            loadSubjectOptions();
+            
+            // Set default date
+            const today = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('paper-date').value = today.toLocaleDateString('en-US', options);
+            
+            // Add sample questions if empty
+            if (Object.keys(questionsBySubject).length === 0) {
+                addSampleQuestions();
+            }
+        });
+
+        // Load institution settings to form
+        function loadInstitutionSettings() {
+            document.getElementById('institution-name').value = institutionSettings.name;
+            document.getElementById('institution-type').value = institutionSettings.type;
+            document.getElementById('institution-tagline').value = institutionSettings.tagline;
+            document.getElementById('logo-text').value = institutionSettings.logoText;
+            document.getElementById('affiliation').value = institutionSettings.affiliation;
+            document.getElementById('address-line1').value = institutionSettings.addressLine1;
+            document.getElementById('address-line2').value = institutionSettings.addressLine2;
+            
+            updateInstitutionPreview();
+        }
+
+        // Save institution settings
+        function saveInstitutionSettings() {
+            institutionSettings = {
+                name: document.getElementById('institution-name').value.trim() || "Gospel Grace Education",
+                type: document.getElementById('institution-type').value,
+                tagline: document.getElementById('institution-tagline').value.trim() || "Where Knowledge Meets Wisdom",
+                logoText: document.getElementById('logo-text').value.trim() || "GGE",
+                affiliation: document.getElementById('affiliation').value.trim() || "Affiliated to CBSE, New Delhi",
+                addressLine1: document.getElementById('address-line1').value.trim(),
+                addressLine2: document.getElementById('address-line2').value.trim()
+            };
+            
+            localStorage.setItem('institutionSettings', JSON.stringify(institutionSettings));
+            updateInstitutionPreview();
+            alert('Institution settings saved successfully!');
+        }
+
+        // Reset institution settings
+        function resetInstitutionSettings() {
+            institutionSettings = {
+                name: "Gospel Grace Education",
+                type: "School",
+                tagline: "Where Knowledge Meets Wisdom",
+                logoText: "GGE",
+                affiliation: "Affiliated to CBSE, New Delhi",
+                addressLine1: "",
+                addressLine2: ""
+            };
+            
+            loadInstitutionSettings();
+            localStorage.setItem('institutionSettings', JSON.stringify(institutionSettings));
+            alert('Institution settings reset to default!');
+        }
+
+        // Update institution preview
+        function updateInstitutionPreview() {
+            document.getElementById('preview-institution-name').textContent = institutionSettings.name;
+            document.getElementById('preview-tagline').textContent = institutionSettings.tagline;
+            document.getElementById('preview-affiliation').textContent = institutionSettings.affiliation;
+            
+            let address = '';
+            if (institutionSettings.addressLine1) address += institutionSettings.addressLine1;
+            if (institutionSettings.addressLine2) {
+                if (address) address += ', ';
+                address += institutionSettings.addressLine2;
+            }
+            document.getElementById('preview-address').textContent = address;
+        }
+
+        // Add sample questions
+        function addSampleQuestions() {
+            const sampleQuestions = {
+                "Mathematics": [
+                    {
+                        id: 1,
+                        sectionId: 1,
+                        sectionName: 'Section A',
+                        subject: 'Mathematics',
+                        text: 'Ram tossed a coin for 560 times in which he got head 230 times. What is the probability of him getting a tail, while tossing the coin?',
+                        type: 'short',
+                        marks: 1,
+                        date: new Date().toLocaleString()
+                    },
+                    {
+                        id: 2,
+                        sectionId: 1,
+                        sectionName: 'Section A',
+                        subject: 'Mathematics',
+                        text: 'There were 8 socks of white, green and blue shuffled in a draw. The probability of selecting a white sock is 1/4. What is the probability of selecting a green sock if the probability of selecting the yellow sock is 5/8?',
+                        type: 'short',
+                        marks: 1,
+                        date: new Date().toLocaleString()
+                    },
+                    {
+                        id: 3,
+                        sectionId: 2,
+                        sectionName: 'Section B',
+                        subject: 'Mathematics',
+                        text: 'A post is standing on the ground whose shadow\'s length is 20 m less when sun\'s altitude is 80° and the post\'s altitude is 45°. Draw a diagram to represent this situation.',
+                        type: 'short',
+                        marks: 2,
+                        date: new Date().toLocaleString()
+                    }
+                ],
+                "English": [
+                    {
+                        id: 4,
+                        sectionId: 1,
+                        sectionName: 'Section A',
+                        subject: 'English',
+                        text: 'What is the central theme of the poem "The Road Not Taken" by Robert Frost?',
+                        type: 'short',
+                        marks: 1,
+                        date: new Date().toLocaleString()
+                    },
+                    {
+                        id: 5,
+                        sectionId: 2,
+                        sectionName: 'Section B',
+                        subject: 'English',
+                        text: 'Write a short paragraph describing your favorite season.',
+                        type: 'short',
+                        marks: 2,
+                        date: new Date().toLocaleString()
+                    }
+                ]
+            };
+            
+            questionsBySubject = sampleQuestions;
+            saveAllQuestions();
+            updateQuestionList();
+            updateStatistics();
+            loadRecentQuestions();
+            updateSubjectFilters();
+            loadSubjectOptions();
+        }
+
+        // Show/Hide Sections
+        function showSection(sectionId, button) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active button
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (button) {
+                button.classList.add('active');
+            }
+            
+            // Load data for section
+            if (sectionId === 'questions-list') {
+                updateQuestionList();
+                updateSubjectFilters();
+            } else if (sectionId === 'generate-paper') {
+                loadSubjectOptions();
+            }
+        }
+
+        // Update Sections
+        function updateSections() {
+            const container = document.getElementById('section-buttons');
+            container.innerHTML = '';
+            
+            sections.forEach(section => {
+                const button = document.createElement('button');
+                button.className = 'section-btn' + (section.id === currentSectionId ? ' active' : '');
+                button.textContent = section.name;
+                button.onclick = () => selectSection(section.id);
+                container.appendChild(button);
+            });
+        }
+
+        // Select Section
+        function selectSection(sectionId) {
+            currentSectionId = sectionId;
+            updateSections();
+        }
+
+        // Add New Section
+        function addNewSection() {
+            const sectionName = prompt('Enter section name (e.g., Section D):');
+            if (sectionName && sectionName.trim()) {
+                const newSection = {
+                    id: sections.length + 1,
+                    name: sectionName.trim(),
+                    description: 'New Section'
+                };
+                sections.push(newSection);
+                saveSections();
+                updateSections();
+                selectSection(newSection.id);
+            }
+        }
+
+        // Question Type Listener
+        function setupQuestionTypeListener() {
+            const questionType = document.getElementById('question-type');
+            const optionsSection = document.getElementById('options-section');
+            
+            questionType.addEventListener('change', function() {
+                if (this.value === 'mcq') {
+                    optionsSection.style.display = 'block';
+                } else {
+                    optionsSection.style.display = 'none';
+                }
+            });
+        }
+
+        // Add Question - Now stores by subject
+        function addQuestion() {
+            const subject = document.getElementById('subject').value.trim();
+            const questionText = document.getElementById('question-text').value.trim();
+            const questionType = document.getElementById('question-type').value;
+            const marks = parseInt(document.getElementById('marks').value);
+            
+            if (!subject || !questionText) {
+                alert('Please fill in subject and question text');
+                return;
+            }
+            
+            const currentSection = sections.find(s => s.id === currentSectionId);
+            
+            const question = {
+                id: Date.now(),
+                sectionId: currentSectionId,
+                sectionName: currentSection.name,
+                subject: subject,
+                text: questionText,
+                type: questionType,
+                marks: marks,
+                date: new Date().toLocaleString()
+            };
+            
+            // Add options for MCQ
+            if (questionType === 'mcq') {
+                const optionsText = document.getElementById('options').value.trim();
+                if (optionsText) {
+                    question.options = optionsText.split('\n').map(opt => opt.trim());
+                    // Find correct answer marked with *
+                    question.correctAnswer = question.options.findIndex(opt => opt.startsWith('*'));
+                    // Remove * from display
+                    question.options = question.options.map(opt => opt.replace(/^\*\s*/, ''));
+                }
+            }
+            
+            // Add correct answer for True/False
+            if (questionType === 'truefalse') {
+                question.correctAnswer = "True";
+            }
+            
+            // Initialize subject array if it doesn't exist
+            if (!questionsBySubject[subject]) {
+                questionsBySubject[subject] = [];
+            }
+            
+            // Add question to subject
+            questionsBySubject[subject].push(question);
+            saveAllQuestions();
+            
+            // Clear form
+            document.getElementById('question-text').value = '';
+            document.getElementById('options').value = '';
+            
+            // Update displays
+            loadRecentQuestions();
+            updateStatistics();
+            updateSubjectFilters();
+            loadSubjectOptions();
+            
+            alert('Question added to ' + currentSection.name + ' in ' + subject + '!');
+        }
+
+        // Save all questions by subject
+        function saveAllQuestions() {
+            localStorage.setItem('questionsBySubject', JSON.stringify(questionsBySubject));
+        }
+
+        function saveSections() {
+            localStorage.setItem('sections', JSON.stringify(sections));
+        }
+
+        // Load Recent Questions
+        function loadRecentQuestions() {
+            const container = document.getElementById('recent-questions');
+            
+            // Get all questions from all subjects
+            const allQuestions = [];
+            for (const subject in questionsBySubject) {
+                questionsBySubject[subject].forEach(q => {
+                    allQuestions.push(q);
+                });
+            }
+            
+            // Sort by date (newest first) and take last 5
+            const recentQuestions = allQuestions
+                .sort((a, b) => b.id - a.id)
+                .slice(0, 5);
+            
+            if (recentQuestions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No questions added yet</div>';
+                return;
+            }
+            
+            let html = '';
+            recentQuestions.forEach(q => {
+                html += `
+                    <div class="question-item">
+                        <div class="question-header">
+                            <span class="question-type">${q.subject} - ${q.sectionName}</span>
+                            <span class="question-marks">${q.marks} marks</span>
+                        </div>
+                        <p>${q.text}</p>
+                        <small>Type: ${getTypeName(q.type)} | Added: ${q.date}</small>
+                        <button class="delete-btn" onclick="deleteQuestion('${q.subject}', ${q.id})" style="position: absolute; right: 10px; bottom: 10px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Update Subject Filters
+        function updateSubjectFilters() {
+            const container = document.getElementById('subject-filters');
+            const subjects = Object.keys(questionsBySubject).sort();
+            
+            // Clear existing filters (except "All Subjects")
+            container.innerHTML = '<button class="filter-btn active" onclick="filterQuestions(\'all\')">All Subjects</button>';
+            
+            // Add subject filters
+            subjects.forEach(subject => {
+                const button = document.createElement('button');
+                button.className = 'filter-btn' + (currentSubjectFilter === subject ? ' active' : '');
+                button.textContent = subject;
+                button.onclick = () => filterQuestions(subject);
+                container.appendChild(button);
+            });
+        }
+
+        // Filter Questions by Subject
+        function filterQuestions(subject) {
+            currentSubjectFilter = subject;
+            
+            // Update active button
+            document.querySelectorAll('#subject-filters .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateQuestionList();
+        }
+
+        // Update Question List with filtering
+        function updateQuestionList() {
+            const table = document.getElementById('questions-table');
+            
+            // Get questions based on filter
+            let questionsToShow = [];
+            if (currentSubjectFilter === 'all') {
+                // Get all questions from all subjects
+                for (const subject in questionsBySubject) {
+                    questionsToShow = questionsToShow.concat(questionsBySubject[subject]);
+                }
+            } else {
+                // Get questions for specific subject
+                questionsToShow = questionsBySubject[currentSubjectFilter] || [];
+            }
+            
+            if (questionsToShow.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px;">
+                            <div class="empty-state">
+                                <i class="fas fa-question-circle"></i>
+                                <p>No questions found for ${currentSubjectFilter === 'all' ? 'any subject' : currentSubjectFilter}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Group by sections
+            let html = '';
+            sections.forEach(section => {
+                const sectionQuestions = questionsToShow.filter(q => q.sectionId === section.id);
+                if (sectionQuestions.length > 0) {
+                    html += `
+                        <tr style="background: #f5f5f5;">
+                            <td colspan="6" style="font-weight: bold; color: #1a237e;">
+                                ${section.name} - ${section.description}
+                                ${section.id > 4 ? `<button class="delete-section-btn" onclick="deleteSection(${section.id})" style="float: right;">
+                                    Delete Section
+                                </button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                    
+                    sectionQuestions.forEach(q => {
+                        html += `
+                            <tr>
+                                <td><strong>${q.subject}</strong></td>
+                                <td>${q.sectionName}</td>
+                                <td>${q.text.substring(0, 80)}${q.text.length > 80 ? '...' : ''}</td>
+                                <td><span class="question-type">${getTypeName(q.type)}</span></td>
+                                <td>${q.marks}</td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteQuestion('${q.subject}', ${q.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+            
+            table.innerHTML = html;
+        }
+
+        // Delete Question from specific subject
+        function deleteQuestion(subject, id) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                if (questionsBySubject[subject]) {
+                    questionsBySubject[subject] = questionsBySubject[subject].filter(q => q.id !== id);
+                    
+                    // If subject has no more questions, remove it
+                    if (questionsBySubject[subject].length === 0) {
+                        delete questionsBySubject[subject];
+                    }
+                    
+                    saveAllQuestions();
+                    updateQuestionList();
+                    updateStatistics();
+                    loadRecentQuestions();
+                    updateSubjectFilters();
+                    loadSubjectOptions();
+                }
+            }
+        }
+
+        // Delete Section
+        function deleteSection(sectionId) {
+            if (sectionId <= 4) {
+                alert('Cannot delete default sections (A, B, C, D)');
+                return;
+            }
+            
+            // Remove section from all subjects
+            let totalQuestions = 0;
+            for (const subject in questionsBySubject) {
+                const sectionQuestions = questionsBySubject[subject].filter(q => q.sectionId === sectionId);
+                totalQuestions += sectionQuestions.length;
+            }
+            
+            if (totalQuestions > 0) {
+                if (!confirm(`This section has ${totalQuestions} questions across all subjects. Delete section and all its questions?`)) {
+                    return;
+                }
+                
+                // Remove questions with this section from all subjects
+                for (const subject in questionsBySubject) {
+                    questionsBySubject[subject] = questionsBySubject[subject].filter(q => q.sectionId !== sectionId);
+                }
+            }
+            
+            sections = sections.filter(s => s.id !== sectionId);
+            saveSections();
+            saveAllQuestions();
+            updateSections();
+            updateQuestionList();
+            updateStatistics();
+            updateSubjectFilters();
+            
+            if (currentSectionId === sectionId) {
+                currentSectionId = 1;
+                updateSections();
+            }
+        }
+
+        // Clear All Questions
+        function clearAllQuestions() {
+            if (confirm('Are you sure you want to delete ALL questions from ALL subjects? This cannot be undone.')) {
+                questionsBySubject = {};
+                saveAllQuestions();
+                updateQuestionList();
+                updateStatistics();
+                loadRecentQuestions();
+                updateSubjectFilters();
+                loadSubjectOptions();
+                alert('All questions have been deleted.');
+            }
+        }
+
+        // Search Questions
+        function searchQuestions() {
+            const searchTerm = document.getElementById('search-questions').value.toLowerCase();
+            const rows = document.querySelectorAll('#questions-table tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (row.style.backgroundColor === 'rgb(245, 245, 245)') {
+                    // Section header rows should always be visible if they have visible questions
+                    let hasVisibleQuestions = false;
+                    let nextRow = row.nextElementSibling;
+                    while (nextRow && nextRow.style.backgroundColor !== 'rgb(245, 245, 245)') {
+                        if (nextRow.textContent.toLowerCase().includes(searchTerm)) {
+                            hasVisibleQuestions = true;
+                            break;
+                        }
+                        nextRow = nextRow.nextElementSibling;
+                    }
+                    row.style.display = hasVisibleQuestions ? '' : 'none';
+                } else {
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                }
+            });
+        }
+
+        // Update Statistics
+        function updateStatistics() {
+            // Count total questions across all subjects
+            let totalQuestions = 0;
+            let totalMarks = 0;
+            
+            for (const subject in questionsBySubject) {
+                totalQuestions += questionsBySubject[subject].length;
+                totalMarks += questionsBySubject[subject].reduce((sum, q) => sum + q.marks, 0);
+            }
+            
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('total-marks-bank').textContent = totalMarks;
+            
+            const activeSections = new Set();
+            for (const subject in questionsBySubject) {
+                questionsBySubject[subject].forEach(q => {
+                    activeSections.add(q.sectionId);
+                });
+            }
+            document.getElementById('total-sections').textContent = activeSections.size;
+            document.getElementById('total-subjects').textContent = Object.keys(questionsBySubject).length;
+        }
+
+        // Get Type Name
+        function getTypeName(type) {
+            const types = {
+                'mcq': 'MCQ',
+                'fib': 'FIB',
+                'short': 'Short',
+                'long': 'Long',
+                'truefalse': 'True/False'
+            };
+            return types[type] || type;
+        }
+
+        // Load subject options for paper generation
+        function loadSubjectOptions() {
+            const select = document.getElementById('paper-subject');
+            const subjects = Object.keys(questionsBySubject).sort();
+            
+            select.innerHTML = '<option value="">-- Select Subject --</option>';
+            
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = `${subject} (${questionsBySubject[subject].length} questions)`;
+                select.appendChild(option);
+            });
+        }
+
+        // Load questions for selected subject
+        function loadSubjectQuestions() {
+            currentPaperSubject = document.getElementById('paper-subject').value;
+            
+            // If a subject is selected, update the paper title
+            if (currentPaperSubject) {
+                const classGrade = document.getElementById('class-grade').value;
+                document.getElementById('paper-title').value = `${currentPaperSubject} - ${classGrade} - Annual Examination 2024`;
+            }
+        }
+
+        // Preview Paper - Now uses selected subject
+        function previewPaper() {
+            const selectedSubject = document.getElementById('paper-subject').value;
+            
+            if (!selectedSubject) {
+                alert('Please select a subject first');
+                return;
+            }
+            
+            if (!questionsBySubject[selectedSubject] || questionsBySubject[selectedSubject].length === 0) {
+                alert(`No questions found for ${selectedSubject}. Please add questions first.`);
+                return;
+            }
+            
+            const paperTitle = document.getElementById('paper-title').value || `${selectedSubject} - Annual Examination 2024`;
+            const classGrade = document.getElementById('class-grade').value || 'Class 10';
+            const paperDate = document.getElementById('paper-date').value || '';
+            const instructions = document.getElementById('instructions').value;
+            const passingPercentage = parseInt(document.getElementById('passing-percentage').value);
+            
+            const preview = document.getElementById('paper-content');
+            const questions = questionsBySubject[selectedSubject];
+            const totalMarks = questions.reduce((sum, q) => sum + q.marks, 0);
+            const passingMarks = Math.ceil(totalMarks * passingPercentage / 100);
+            
+            // Group questions by sections
+            const questionsBySection = {};
+            sections.forEach(section => {
+                const sectionQuestions = questions.filter(q => q.sectionId === section.id);
+                if (sectionQuestions.length > 0) {
+                    questionsBySection[section.name] = {
+                        questions: sectionQuestions,
+                        description: section.description,
+                        totalMarks: sectionQuestions.reduce((sum, q) => sum + q.marks, 0)
+                    };
+                }
+            });
+            
+            // Build address string
+            let address = '';
+            if (institutionSettings.addressLine1) address += institutionSettings.addressLine1;
+            if (institutionSettings.addressLine2) {
+                if (address) address += ', ';
+                address += institutionSettings.addressLine2;
+            }
+            
+            let html = `
+                <!-- Institution Header -->
+                <div class="paper-header">
+                    <div class="school-logo">
+                        <div class="logo-placeholder">
+                            <div style="text-align: center;">
+                                <i class="fas fa-graduation-cap" style="font-size: 40px; color: #1a237e;"></i>
+                                <div style="margin-top: 5px; font-size: 14px; font-weight: bold;">${institutionSettings.logoText}</div>
+                            </div>
+                        </div>
+                        <div class="school-info">
+                            <div class="school-name">${institutionSettings.name}</div>
+                            <div class="school-tagline">${institutionSettings.tagline}</div>
+                            <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                                ${institutionSettings.affiliation}
+                            </div>
+                            ${address ? `<div style="margin-top: 5px; font-size: 12px; color: #999;">${address}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="paper-title">${paperTitle}</div>
+                    
+                    <div class="time-marks">
+                        <strong>Time: 3 Hours</strong> | <strong>Maximum Marks: ${totalMarks}</strong>
+                    </div>
+                    
+                    <div class="paper-info">
+                        <div>
+                            <strong>Class:</strong> ${classGrade}<br>
+                            <strong>Subject:</strong> ${selectedSubject}
+                        </div>
+                        <div>
+                            <strong>Date:</strong> ${paperDate}<br>
+                            <strong>Roll No.:</strong> ________
+                        </div>
+                        <div>
+                            <strong>Code No.:</strong> 041<br>
+                            <strong>Duration:</strong> 3 Hrs
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="paper-section">
+                    <div class="section-title">GENERAL INSTRUCTIONS:</div>
+                    <div class="instructions-list">
+                        ${instructions.split('\n').filter(line => line.trim()).map(line => {
+                            const parts = line.split(')');
+                            if (parts.length > 1) {
+                                return `<li><span>${parts.slice(1).join(')').trim()}</span></li>`;
+                            }
+                            return `<li><span>${line.trim()}</span></li>`;
+                        }).join('')}
+                    </div>
+                </div>
+                
+                <div style="height: 20px;"></div>
+            `;
+            
+            // Display questions by section
+            let globalQuestionNumber = 1;
+            for (const [sectionName, sectionData] of Object.entries(questionsBySection)) {
+                html += `
+                    <div class="paper-section">
+                        <div class="section-header">
+                            <div class="section-title">${sectionName.toUpperCase()}</div>
+                            <div style="font-weight: bold; color: #1a237e;">[${sectionData.description}]</div>
+                        </div>
+                `;
+                
+                sectionData.questions.forEach((q, index) => {
+                    html += `
+                        <div class="paper-question">
+                            <div class="question-number">${globalQuestionNumber}.</div>
+                            <div class="question-content">
+                                <div>${q.text}</div>
+                                ${q.type === 'mcq' && q.options ? `
+                                    <div class="options">
+                                        ${q.options.map((opt, i) => `
+                                            <div class="option">(${String.fromCharCode(65 + i)}) ${opt}</div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                ${q.type === 'truefalse' ? `
+                                    <div class="options">
+                                        <div class="option">( ) True</div>
+                                        <div class="option">( ) False</div>
+                                    </div>
+                                ` : ''}
+                                ${q.type === 'fib' ? `
+                                    <div style="margin-top: 10px; font-style: italic;">
+                                        [Fill in the blanks]
+                                    </div>
+                                ` : ''}
+                                ${(globalQuestionNumber === 1 || globalQuestionNumber === 2) ? `
+                                    <div class="or-separator">(OR)</div>
+                                ` : ''}
+                                <div style="margin-top: 10px; color: #666; font-weight: bold;">
+                                    [${q.marks} Mark${q.marks > 1 ? 's' : ''}]
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    globalQuestionNumber++;
+                });
+                
+                html += `</div>`;
+            }
+            
+            // Footer
+            html += `
+                <div class="paper-footer">
+                    <div style="text-align: left; float: left; width: 50%;">
+                        <strong>Signature of Invigilator</strong><br><br>
+                        ______________________<br>
+                        <small>Name & Designation</small>
+                    </div>
+                    <div style="text-align: right; float: right; width: 50%;">
+                        <div class="total-marks">Maximum Marks: ${totalMarks}</div>
+                        <div class="passing-marks">Passing Marks: ${passingMarks} (${passingPercentage}%)</div><br>
+                        <strong>Signature of Examiner</strong><br>
+                        ______________________
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            `;
+            
+            preview.innerHTML = html;
+        }
+
+        // Print Paper
+        function printPaper() {
+            const selectedSubject = document.getElementById('paper-subject').value;
+            
+            if (!selectedSubject) {
+                alert('Please select a subject first');
+                return;
+            }
+            
+            if (!questionsBySubject[selectedSubject] || questionsBySubject[selectedSubject].length === 0) {
+                alert(`No questions found for ${selectedSubject}. Please add questions first.`);
+                return;
+            }
+            
+            // First preview to ensure content is generated
+            previewPaper();
+            
+            // Wait a moment for DOM to update
+            setTimeout(() => {
+                const printContent = document.getElementById('paper-content').innerHTML;
+                const printWindow = window.open('', '_blank');
+                
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>CBSE Question Paper - ${selectedSubject}</title>
+                        <meta charset="UTF-8">
+                        <style>
+                            @page {
+                                margin: 0;
+                                size: A4;
+                            }
+                            body {
+                                font-family: 'Times New Roman', Times, serif;
+                                margin: 0;
+                                padding: 0;
+                                line-height: 1.6;
+                                background: white;
+                            }
+                            .paper-container {
+                                width: 210mm;
+                                min-height: 297mm;
+                                padding: 15mm 20mm;
+                                position: relative;
+                                box-sizing: border-box;
+                            }
+                            /* CBSE Blue Border */
+                            .paper-container::before {
+                                content: '';
+                                position: absolute;
+                                top: 15mm;
+                                left: 15mm;
+                                right: 15mm;
+                                bottom: 15mm;
+                                border: 2px solid #1a237e;
+                            }
+                            /* Inner Black Border */
+                            .paper-container::after {
+                                content: '';
+                                position: absolute;
+                                top: 18mm;
+                                left: 18mm;
+                                right: 18mm;
+                                bottom: 18mm;
+                                border: 1px solid #000;
+                            }
+                            .paper-header {
+                                text-align: center;
+                                margin-bottom: 25px;
+                                border-bottom: 2px solid #1a237e;
+                                padding-bottom: 15px;
+                                position: relative;
+                                z-index: 1;
+                            }
+                            .school-logo {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 30px;
+                                margin-bottom: 20px;
+                            }
+                            .logo-placeholder {
+                                width: 100px;
+                                height: 100px;
+                                border: 2px solid #1a237e;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: #1a237e;
+                                font-size: 12px;
+                                background: white;
+                            }
+                            .school-name {
+                                font-size: 28px;
+                                font-weight: bold;
+                                color: #1a237e;
+                                margin-bottom: 5px;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                            }
+                            .paper-title {
+                                font-size: 22px;
+                                color: #000;
+                                margin: 20px 0 15px 0;
+                                font-weight: bold;
+                                text-decoration: underline;
+                            }
+                            .paper-info {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-top: 15px;
+                                font-size: 15px;
+                            }
+                            .paper-section {
+                                margin-bottom: 30px;
+                                page-break-inside: avoid;
+                            }
+                            .section-title {
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #000;
+                                margin-bottom: 15px;
+                                padding-bottom: 8px;
+                                border-bottom: 1px solid #ccc;
+                            }
+                            .paper-question {
+                                margin-bottom: 20px;
+                                position: relative;
+                                page-break-inside: avoid;
+                            }
+                            .question-number {
+                                font-weight: bold;
+                                position: absolute;
+                                left: 0;
+                                top: 0;
+                                min-width: 25px;
+                            }
+                            .question-content {
+                                margin-left: 30px;
+                            }
+                            .paper-footer {
+                                margin-top: 50px;
+                                padding-top: 20px;
+                                border-top: 2px solid #1a237e;
+                                text-align: right;
+                                page-break-before: avoid;
+                            }
+                            .instructions-list {
+                                list-style-type: lower-roman;
+                                margin-left: 20px;
+                            }
+                            .time-marks {
+                                text-align: center;
+                                font-size: 16px;
+                                margin-bottom: 20px;
+                                border-bottom: 1px solid #ccc;
+                                padding-bottom: 10px;
+                            }
+                            @media print {
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                .paper-container {
+                                    width: 210mm;
+                                    min-height: 297mm;
+                                    page-break-after: always;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="paper-container">
+                            ${printContent}
+                        </div>
+                        <script>
+                            // Auto print after loading
+                            setTimeout(function() {
+                                window.print();
+                                window.close();
+                            }, 500);
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
+            }, 100);
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + Enter to add question
+            if (e.ctrlKey && e.key === 'Enter') {
+                if (document.getElementById('add-question').classList.contains('active')) {
+                    addQuestion();
+                }
+            }
+            
+            // Ctrl + P to print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printPaper();
+            }
+        });
+    </script>
+</body>
+</html>
